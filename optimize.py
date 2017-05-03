@@ -6,6 +6,7 @@ import tensorflow as tf
 from PIL import Image
 from lake_constraint import calculate_lake_constraint
 from slope_constraint import calculate_slope_constraint
+from variance_tendency import calculate_variance_tendency
 
 
 def create_noise_map(dimensions):
@@ -15,7 +16,9 @@ def create_noise_map(dimensions):
 class HeightmapOptimizer:
     def __init__(self, init_map):
         self.heightmap = tf.Variable(initial_value=tf.constant(init_map, dtype=tf.float32) / 256, name="Heightmap")
-        self.loss = 5 * calculate_lake_constraint(self.heightmap) + calculate_slope_constraint(self.heightmap, 0.05)
+        self.loss = 5 * calculate_lake_constraint(self.heightmap) + \
+                    1 * calculate_slope_constraint(self.heightmap, 0.05) + \
+                    0.1 * 640 * 480 * calculate_variance_tendency(self.heightmap)
         self.learning_rate = 0.1
         self.optimizer = tf.train.AdamOptimizer(self.learning_rate,
                                                 beta1=0.9, beta2=0.999, epsilon=1e-08).minimize(self.loss)

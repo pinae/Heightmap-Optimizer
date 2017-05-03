@@ -32,7 +32,7 @@ if __name__ == "__main__":
     optimizer = HeightmapOptimizer(initial_map)
     for i in range(200):
         height_map = optimizer.optimize_step()
-        x = height_map.reshape((initial_map.shape[1], initial_map.shape[2])).astype(np.uint8)
+        x = np.clip(height_map.reshape((initial_map.shape[1], initial_map.shape[2])), 0.0, 255.0).astype(np.uint8)
         x = np.dstack((x, x, x))
         im = Image.fromarray(x)
         im.save("images/image" + str(i) + ".jpg", quality=95)
